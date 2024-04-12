@@ -52,18 +52,31 @@ export default {
     },
     async login() {
       console.log('Logging in...');
-      console.log('Username:', this.loginUsername);
-      console.log('Password:', this.loginPassword);
+      
       // Implement login logic here
-      this.$router.push('/dashboard');
+      const response = await fetch('http://127.0.0.1:8000/firebase-login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: this.loginUsername,
+            password: this.loginPassword
+          })
+        });
+      const data = await response.json();
+      if (response?.ok) {
+        localStorage.setItem("accessToken", data?.user?.idToken);
+        this.$router.push('/dashboard');
+      } else this.message = data?.error;
+      
     },
     async register() {
       console.log('Registering...');
-      console.log('Username:', this.registerUsername);
-      console.log('Password:', this.registerPassword);
+      
       console.log('Confirm Password:', this.confirmPassword);
       try {
-        const response = await fetch('http://127.0.0.1:8000/register', {
+        const response = await fetch('http://127.0.0.1:8000/firebase-register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

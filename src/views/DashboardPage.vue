@@ -28,7 +28,8 @@ export default {
     logout() {
       // Implement logout logic here
       console.log('Logged out');
-    this.$router.push('/');
+      localStorage.removeItem("accessToken");
+      this.$router.push('/');
     }
   }
 }
