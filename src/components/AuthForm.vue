@@ -80,7 +80,7 @@ export default {
       
       console.log('Confirm Password:', this.confirmPassword);
       try {
-        const response = await fetch('http://127.0.0.1:8000/firebase-register', {
+        const response = await fetch('http://127.0.0.1:8000/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -107,7 +107,9 @@ export default {
 async loginWithGoogle() {
   try {
     const provider = googleProvider;
-    await signInWithPopup(auth,provider);
+    const result = await signInWithPopup(auth, provider);
+    const accessToken = await result.user.getIdToken(); // Get the access token from the authentication result
+    localStorage.setItem('accessToken', accessToken); // Store the accessToken in localStorage
     this.success = true;
     this.message = 'Login with Google successful!';
     this.$router.push('/dashboard');
@@ -115,8 +117,7 @@ async loginWithGoogle() {
     console.error('Google Sign-In Error:', error);
     this.success = false;
     this.message = 'Google Sign-In failed.';
-  }
-},
+  }},
     formatErrors(field, errors) {
       let messages = [];
       if (Array.isArray(errors)) {
