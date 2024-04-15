@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AuthForm from './components/AuthForm.vue';
 import DashboardPage from './views/DashboardPage.vue';
+import NotFound from './views/NotFound.vue';
 
 const routes = [
   { path: '/', component: AuthForm, name: 'AuthForm' },
-  { path: '/dashboard', component: DashboardPage, name: 'DashboardPage', meta: { requiresAuth: true } }
+  { path: '/dashboard', component: DashboardPage, name: 'DashboardPage', meta: { requiresAuth: true } },
+  { path: '/:pathMatch(.*)*', component: NotFound }
 ];
 
 const router = createRouter({
