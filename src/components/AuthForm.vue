@@ -31,6 +31,10 @@
 </template>
 
 <script>
+
+import { auth, googleProvider } from '@/firebase';
+import { signInWithPopup } from 'firebase/auth';
+
 export default {
   name: 'AuthForm',
   data() {
@@ -54,7 +58,7 @@ export default {
       console.log('Logging in...');
       
       // Implement login logic here
-      const response = await fetch('http://127.0.0.1:8000/firebase-login', {
+      const response = await fetch('http://127.0.0.1:8000/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -100,51 +104,19 @@ export default {
         this.message = 'An error occurred while registering.';
       }
     },
-    loginWithGoogle() {
-      // Initialize Google Sign-In
-      // eslint-disable-next-line no-undef
-      gapi.load('auth2', () => {
-        // eslint-disable-next-line no-undef
-        const auth2 = gapi.auth2.init({
-          client_id: '515451191353-svpbtcqcpkvpelk2cd5p2spk1ivm2hl7.apps.googleusercontent.com',
-          scope: 'profile email'
-        });
-        
-        // Sign in with Google
-        auth2.signIn().then(googleUser => {
-          // Obtain the Google ID token
-          const idToken = googleUser.getAuthResponse().id_token;
-          
-          // Send the token to your backend for verification and authentication
-          this.sendGoogleIdTokenToServer(idToken);
-        });
-      });
-    },
-    sendGoogleIdTokenToServer(idToken) {
-      // Send an HTTP request to your backend with the Google ID token
-      // Example:
-      fetch('http://127.0.0.1:8000/google-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ idToken })
-      })
-      .then(response => {
-        if (response.ok) {
-          // Handle successful authentication
-          console.log('Successfully logged in with Google');
-          this.$router.push('/dashboard');
-        } else {
-          // Handle authentication error
-          console.error('Failed to log in with Google');
-        }
-      })
-      .catch(error => {
-        // Handle network error
-        console.error('Error:', error);
-      });
-    },
+async loginWithGoogle() {
+  try {
+    const provider = googleProvider;
+    await signInWithPopup(auth,provider);
+    this.success = true;
+    this.message = 'Login with Google successful!';
+    this.$router.push('/dashboard');
+  } catch (error) {
+    console.error('Google Sign-In Error:', error);
+    this.success = false;
+    this.message = 'Google Sign-In failed.';
+  }
+},
     formatErrors(field, errors) {
       let messages = [];
       if (Array.isArray(errors)) {
